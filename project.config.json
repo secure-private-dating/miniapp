@@ -18,11 +18,10 @@
 		}
 	},
 	"compileType": "miniprogram",
-	"appid": "wx387d93f434e6b3f4",
-	"projectname": "miniapp2",
+	"appid": "wx9f2e95dd133a1a54",
+	"projectname": "miniapp",
 	"miniprogramRoot": "weapp/",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
-	"libVersion": "2.7.3",
 	"condition": {}
 }

@@ -12,9 +12,9 @@
 <script>
 import wepy from '@wepy/core';
 import eventHub from './common/eventHub';
-import vuex from '@wepy/x';
+import wepyRedux from '@wepy/redux';
 
-wepy.use(vuex);
+wepy.use(wepyRedux);
 
 
 wepy.app({

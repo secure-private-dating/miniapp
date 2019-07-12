@@ -69,7 +69,7 @@ module.exports.getTime = getTime;
       <text class="info">{{setTimeoutTitle}}</text>
       <text class="info" @tap="mixintap">{{mixin}}</text>
       <text class="info">{{testcomputed}}</text>
-      <text class="info">{{counter}}</text>
+      <text class="info">{{counter.num}}</text>
     </panel>
 
     <panel>
@@ -142,7 +142,7 @@ module.exports.getTime = getTime;
 <script>
   import wepy from '@wepy/core'
   import eventHub from '../common/eventHub';
-  import { mapState } from '@wepy/x';
+  import { mapState } from '@wepy/redux';
   import store from '../store';
   import testMixin from '../mixins/test'
   import io from 'weapp.socket.io'

@@ -1,5 +1,5 @@
 {
-  "name": "miniapp2",
+  "name": "miniapp",
   "version": "0.0.2",
   "description": "A WePY project",
   "main": "weapp/app.js",
@@ -16,13 +16,16 @@
   "author": "tc-imba <liuyh615@sjtu.edu.cn>",
   "license": "MIT",
   "dependencies": {
+    "@wepy/redux": "^2.0.1",
+    "redux": "^4.0.1",
+    "redux-actions": "^2.6.5",
+    "redux-promise": "^0.6.0",
     "@wepy/core": "^2.0.0-alpha.8",
-    "@wepy/x": "^2.0.2",
     "miniprogram-slide-view": "0.0.3",
     "weapp.socket.io": "^2.0.1"
   },
   "devDependencies": {
-    "@wepy/cli": "^2.0.0-alpha.10",
+    "@wepy/cli": "^2.0.0-alpha.13",
     "@babel/core": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "@wepy/babel-plugin-import-regenerator": "0.0.2",

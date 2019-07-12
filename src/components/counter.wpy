@@ -20,14 +20,16 @@
     <button @tap="minus" size="mini">  -  </button>
     <button @tap="increment" size="mini">  INCREMENT  </button>
     <button @tap="decrement" size="mini">  DECREMENT  </button>
-    <button @tap="incrementAsync" size="mini">  ASYNC INCREMENT  </button>
-    <span class="count"> {{counter}} </span>
+    <button @tap="asyncInc" size="mini">  ASYNC INCREMENT  </button>
+    <span class="count"> {{counter.num}} - {{counter.asyncNum}} </span>
   </div>
 </template>
 <script>
   import wepy from '@wepy/core'
   import store from '../store';
-  import { mapState, mapActions } from '@wepy/x';
+  import { mapState, mapActions } from '@wepy/redux';
+  import { INCREMENT, DECREMENT, ASYNC_INCREMENT } from '../store/types';
+  import { asyncInc } from '../store/actions';
 
   wepy.component({
     store,
@@ -56,11 +58,11 @@
     },
 
     methods: {
-      ...mapActions([
-        'increment',
-        'decrement',
-        'incrementAsync'
-      ]),
+      ...mapActions({
+        increment: INCREMENT,
+        decrement: DECREMENT,
+        asyncInc, 
+      }),
       plus () {
         this.num = this.num + 1
         console.log('plus tapped in component');
