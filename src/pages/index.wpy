@@ -85,6 +85,12 @@ module.exports.getTime = getTime;
       <button @tap="request" size="mini"> 点我发起10个请求 </button>
     </panel>
 
+    <panel>
+      <div class="title" slot="title">测试发送密文至服务端</div>
+      <div>返回结果: <text>{{decrypted}}</text></div>
+      <button @tap="encry" size="mini"> 点我发送 </button>
+    </panel>
+
      <panel>
        <div class="title" slot="title">测试 v-model</div>
        <div style="display: flex; align-items: center;">
@@ -179,6 +185,7 @@ module.exports.getTime = getTime;
       setTimeoutTitle: '标题三秒后会被修改',
       count: 0,
       netrst: '',
+      decrypted: '',
       groupList: [
         {
           id: 1,
@@ -280,21 +287,27 @@ module.exports.getTime = getTime;
       },
       counterEmit (num) {
         console.log(`${this.$is} receive event, the number is: ${num}`);
+      },
+      encry () {
+        let self = this
+        const socket = io('http://localhost:8000')
+        const CryptoJS = require('crypto-js');
+        socket.on('connect', () => {
+          console.log("socket connected: "+socket.id);
+          console.log("start encryption")
+          let encrypted = CryptoJS.AES.encrypt('LYHNB', 'Secret Passphrase').toString();
+          socket.emit("broadcast", encrypted);
+        });
+        socket.on('response', (data) => {
+          console.log(data);
+          let bytes = CryptoJS.AES.decrypt(data, 'Secret Passphrase')
+          self.decrypted = bytes.toString(CryptoJS.enc.Utf8)
+          console.log("decrypted: " + self.decrypted)
+        });
       }
     },
 
     created () {
-      console.log(11111);
-      const socket = io('http://localhost:8000');
-      socket.on('connect', () => {
-        console.log(socket.id); // 'G5p5...'
-        socket.emit('fxhsb', 'aaaaa');
-      });
-
-      socket.on('fxhsb', (data) => {
-        console.log(data);
-      });
-
       let self = this
       self.currentTime = +new Date();
 
