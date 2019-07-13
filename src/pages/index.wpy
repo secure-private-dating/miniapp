@@ -85,6 +85,18 @@ module.exports.getTime = getTime;
       <button @tap="request" size="mini"> 点我发起10个请求 </button>
     </panel>
 
+    <panel>
+      <div class="title" slot="title">测试发送AES密文至服务端</div>
+      <div>返回结果: <text>{{decrypted}}</text></div>
+      <button @tap="AESencry" size="mini"> 点我发送 </button>
+    </panel>
+
+    <panel>
+      <div class="title" slot="title">测试发送非对称密文至服务端</div>
+      <div>返回结果: <text>{{Asym_decrypted}}</text></div>
+      <button @tap="ASYMencry" size="mini"> 点我发送 </button>
+    </panel>
+
      <panel>
        <div class="title" slot="title">测试 v-model</div>
        <div style="display: flex; align-items: center;">
@@ -179,6 +191,8 @@ module.exports.getTime = getTime;
       setTimeoutTitle: '标题三秒后会被修改',
       count: 0,
       netrst: '',
+      Asym_decrypted: '',
+      decrypted: '',
       groupList: [
         {
           id: 1,
@@ -280,6 +294,43 @@ module.exports.getTime = getTime;
       },
       counterEmit (num) {
         console.log(`${this.$is} receive event, the number is: ${num}`);
+      },
+      AESencry () {
+        let self = this
+        const socket = io('http://localhost:8000')
+        const CryptoJS = require('crypto-js');
+        socket.on('connect', () => {
+          console.log("socket connected: "+socket.id);
+          console.log("start encryption")
+          let encrypted = CryptoJS.AES.encrypt('LYHNB', 'Secret Passphrase').toString();
+          socket.emit("broadcast", encrypted);
+        });
+        socket.on('response', (data) => {
+          console.log(data);
+          let bytes = CryptoJS.AES.decrypt(data, 'Secret Passphrase')
+          self.decrypted = bytes.toString(CryptoJS.enc.Utf8)
+          console.log("decrypted: " + self.decrypted)
+        });
+      },
+      ASYMencry () {
+        console.log("start asymmetric encryption test")
+        let self = this
+        const socket = io('http://localhost:8000')
+        const nacl = require('tweetnacl')
+        nacl.util = require('tweetnacl-util')
+        const alice = nacl.box.keyPair()
+        const bob = nacl.box.keyPair()
+        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
+        const plaintext = 'LYHSB'
+        const box = nacl.box(nacl.util.decodeUTF8(plaintext), nonce, alice.publicKey, bob.secretKey)
+        const message = {box, nonce}
+        socket.emit('broadcast', message)
+        socket.on('response', (data) => {
+          console.log("receive"+data)
+          const payload = nacl.box.open(data.box, data.nonce, bob.publicKey, alice.secretKey)
+          const utf8 = nacl.util.encodeUTF8(payload)
+          console.log(utf8)
+        });
       }
     },
 

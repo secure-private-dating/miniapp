@@ -16,12 +16,15 @@
   "author": "tc-imba <liuyh615@sjtu.edu.cn>",
   "license": "MIT",
   "dependencies": {
+    "@wepy/core": "^2.0.0-alpha.8",
     "@wepy/redux": "^2.0.1",
+    "crypto-js": "^3.1.9-1",
+    "miniprogram-slide-view": "0.0.3",
     "redux": "^4.0.1",
     "redux-actions": "^2.6.5",
     "redux-promise": "^0.6.0",
-    "@wepy/core": "^2.0.0-alpha.8",
-    "miniprogram-slide-view": "0.0.3",
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-util": "^0.15.0",
     "weapp.socket.io": "^2.0.1"
   },
   "devDependencies": {
