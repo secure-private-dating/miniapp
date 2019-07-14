@@ -325,10 +325,11 @@ module.exports.getTime = getTime;
         // nacl.util = require('tweetnacl-util')
         const alice = nacl.box.keyPair()
         const bob = nacl.box.keyPair()
+        const temp = nacl.box.keyPair()
         let noncearray = nacl.randomBytes(nacl.secretbox.nonceLength)
         let nonce = encodeBase64(noncearray)
         const plaintext = 'LYHSB'
-        let boxarray = nacl.box(encodeUTF8(plaintext), noncearray, alice.publicKey, bob.secretKey)
+        let boxarray = nacl.box(encodeUTF8(plaintext), noncearray, alice.publicKey, temp.secretKey)
         // console.log(boxarray)
         let box = encodeBase64(boxarray)
         const message = {box, nonce}
@@ -337,11 +338,16 @@ module.exports.getTime = getTime;
         socket.on('response', (d) => {
           console.log("receive"+d)
           const data = JSON.parse(d)
-          const payload = nacl.box.open(decodeBase64(data.box), decodeBase64(data.nonce), bob.publicKey, alice.secretKey)
-          const utf8 = decodeUTF8(payload)
-          self.Asym_decrypted = utf8
-          console.log('plain text: ' + utf8)
-          socket.close()
+          const payload = nacl.box.open(decodeBase64(data.box), decodeBase64(data.nonce), temp.publicKey, bob.secretKey)
+          if (payload == null) {
+            console.log('not your message')
+          }
+          else {
+            const utf8 = decodeUTF8(payload)
+            self.Asym_decrypted = utf8
+            console.log('plain text: ' + utf8)
+            socket.close()
+          }
         })
       }
     },
