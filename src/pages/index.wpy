@@ -158,6 +158,10 @@ module.exports.getTime = getTime;
   import store from '../store';
   import testMixin from '../mixins/test'
   import io from 'weapp.socket.io'
+  import nacl from 'tweetnacl'
+  import naclutil from 'tweetnacl-util'
+  import {encode as encodeBase64, decode as decodeBase64} from '@stablelib/base64'
+  import {AES, enc} from 'crypto-js'
 
   wepy.page({
     store,
@@ -298,39 +302,47 @@ module.exports.getTime = getTime;
       AESencry () {
         let self = this
         const socket = io('http://localhost:8000')
-        const CryptoJS = require('crypto-js');
+        // const CryptoJS = require('crypto-js');
         socket.on('connect', () => {
           console.log("socket connected: "+socket.id);
           console.log("start encryption")
-          let encrypted = CryptoJS.AES.encrypt('LYHNB', 'Secret Passphrase').toString();
+          let encrypted = AES.encrypt('LYHNB', 'Secret Passphrase').toString();
           socket.emit("broadcast", encrypted);
         });
         socket.on('response', (data) => {
           console.log(data);
-          let bytes = CryptoJS.AES.decrypt(data, 'Secret Passphrase')
-          self.decrypted = bytes.toString(CryptoJS.enc.Utf8)
+          let bytes = AES.decrypt(data, 'Secret Passphrase')
+          self.decrypted = bytes.toString(enc.Utf8)
           console.log("decrypted: " + self.decrypted)
+          socket.close()
         });
       },
       ASYMencry () {
         console.log("start asymmetric encryption test")
         let self = this
         const socket = io('http://localhost:8000')
-        const nacl = require('tweetnacl')
-        nacl.util = require('tweetnacl-util')
+        // const nacl = require('tweetnacl')
+        // nacl.util = require('tweetnacl-util')
         const alice = nacl.box.keyPair()
         const bob = nacl.box.keyPair()
-        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
+        let noncearray = nacl.randomBytes(nacl.secretbox.nonceLength)
+        let nonce = encodeBase64(noncearray)
         const plaintext = 'LYHSB'
-        const box = nacl.box(nacl.util.decodeUTF8(plaintext), nonce, alice.publicKey, bob.secretKey)
+        let boxarray = nacl.box(naclutil.decodeUTF8(plaintext), noncearray, alice.publicKey, bob.secretKey)
+        // console.log(boxarray)
+        let box = encodeBase64(boxarray)
         const message = {box, nonce}
-        socket.emit('broadcast', message)
-        socket.on('response', (data) => {
-          console.log("receive"+data)
-          const payload = nacl.box.open(data.box, data.nonce, bob.publicKey, alice.secretKey)
-          const utf8 = nacl.util.encodeUTF8(payload)
-          console.log(utf8)
-        });
+        const msg = JSON.stringify(message)
+        socket.emit('broadcast', msg)
+        socket.on('response', (d) => {
+          console.log("receive"+d)
+          const data = JSON.parse(d)
+          const payload = nacl.box.open(decodeBase64(data.box), decodeBase64(data.nonce), bob.publicKey, alice.secretKey)
+          const utf8 = naclutil.encodeUTF8(payload)
+          self.Asym_decrypted = utf8
+          console.log('plain text: ' + utf8)
+          socket.close()
+        })
       }
     },
 

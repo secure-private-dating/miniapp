@@ -16,10 +16,13 @@
   "author": "tc-imba <liuyh615@sjtu.edu.cn>",
   "license": "MIT",
   "dependencies": {
+    "@stablelib/base64": "^0.7.2",
     "@wepy/core": "^2.0.0-alpha.8",
     "@wepy/redux": "^2.0.1",
+    "crypto-browserify": "^3.12.0",
     "crypto-js": "^3.1.9-1",
     "miniprogram-slide-view": "0.0.3",
+    "polyfill-crypto.getrandomvalues": "^1.0.0",
     "redux": "^4.0.1",
     "redux-actions": "^2.6.5",
     "redux-promise": "^0.6.0",
